@@ -1,0 +1,55 @@
+const express = require("express");
+const my sql = require("my sql");
+const bodyParser = require ("body-parser");
+const cors = require("cors");
+
+const app = express();
+const port = 3000;
+
+app.use(cors());
+app.use(bodyParser.json());
+
+const db=mysql.createConnection({
+	host: "localhost",
+	user: "root:,
+	password: "",
+	database: "chechin db"
+)};
+
+db.connect((err) => {
+	if(err){
+	con("sole.error("Database connection failed:", err.stack);
+	return;
+}
+console.log("Connected to MySQL database.");
+});
+
+app.post("/checkin", (req, res) =>{
+const {student_id, checkin_time} = req.body;
+const sql = "INSERT INTO checkins (student_id, checkin_time) VALUES (?,?)";
+db.query(sql, [student_id, checkin_time], (err,result)=>{
+       if(err){
+	console.error("Insert error:", err);
+	res.status(500).send ("error saving check-in");}
+	else {
+	res.status(200).send ("Checkin succcessful");}
+});
+});
+
+app.get("/checkins", (req, res) =>{
+db.query("SELECT * FROM checkins", (err,result) =>{
+if(err){
+        console.error("Query error:", err);
+	res.error(500).send("Error rretriving data");}
+else{
+res.json(results);
+}
+});
+});
+
+app.listen(port, ()=>{
+console.log('Server is running at http://;localhost:${port}');
+});
+
+
+

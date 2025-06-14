@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Check-In Admin Page</title>
+  <style>
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; } 
+    th { background-color:#f0f0f0; }
+  </style>
+</head>
+<body>
+  <h2>Check-In Records</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>User ID</th>
+        <th>Latitude</th>
+        <th>Longitude</th>
+        <th>Timestamp</th>
+      </tr>
+     </thead>
+     <tbody>
+       <% data.forEach(function(row) { %>
+        <tr>
+          <td><%=row.id %></td>
+          <td><%=row.user_id %></td>
+	  <td><%=row.latitude %></td>
+	  <td><%=row.longitude %></td>	
+	  <td><%=row.timestamp.toISOString().replace('T', ' ').slice(0,19) %></td>
+        </tr>
+       <%}); %>
+      </tbody>
+     </table>
+    </body>
+   </html>
