@@ -1,42 +1,52 @@
-const express =  require('express');
+const express = require('express');
 const mysql = require('mysql');
-const bodyParser = require('body-parser');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Database connection
 const db = mysql.createConnection({
-	host: 'localhost',
-	user: 'root',
-	password: '',
-	database: 'checkin_db'
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
 });
 
-db.connect(err =>{
-	if (err) throw err;
-	console.log("Connected to MySQL");
+
+db.connect(err => {
+  if (err) {
+    console.error("Database connection error:", err);
+    process.exit(1); // hentikan server jika DB gagal
+  }
+  console.log("Connected to MySQL");
 });
 
-app.post('/checkin', (req,res) =>{
-const {user_id, latitude, longitude, timestap}= req.body;
-const sql = 'INSERT INTO checkins (user_id, latitude, longitude, timestap)VALUES(?,?,?,?)';
-db.query(sql, [user_id, latitude, longitude, timestap], (err) =>{
-	if(err) return res.status(500).send('Database error');
-	res.send('Check-in successful');
-});
+
+// POST check-in
+app.post('/checkin', (req, res) => {
+  const { user_id, latitude, longitude, timestamp } = req.body;
+  const sql = 'INSERT INTO checkins (user_id, latitude, longitude, timestamp) VALUES (?, ?, ?, ?)';
+  db.query(sql, [user_id, latitude, longitude, timestamp], err => {
+    if (err) return res.status(500).send('Database error');
+    res.send('Check-in successful');
+  });
 });
 
-app.get('/checkons', (req,res) =>{
-db.query('SELECT* FROM checkins ORDER BY id DESC', (err,results) =>{
-	if(err) return res.status(500).send('Fetch error');
-	res.json(results);
-});
-});
-
-app.listen(3000, () =>{
-	console.log("Server running on port 3000");
+// GET all check-ins
+app.get('/checkins', (req, res) => {
+  db.query('SELECT * FROM checkins ORDER BY id DESC', (err, results) => {
+    if (err) return res.status(500).send('Fetch error');
+    res.json(results);
+  });
 });
 
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 
